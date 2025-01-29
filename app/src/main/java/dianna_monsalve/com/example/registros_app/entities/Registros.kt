@@ -1,50 +1,48 @@
 package dianna_monsalve.com.example.registros_app.entities
 
 import android.content.Context
-import androidx.room.Room
-import dianna_monsalve.com.example.registros_app.dao.MedidorDao
-import dianna_monsalve.com.example.registros_app.db.Database
 import dianna_monsalve.com.example.registros_app.db.MedidorDaoDbHelper
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
-class Registros(
-    private val medidorDao: MedidorDao
-) {
-    suspend fun obtenerTodos():List<Medidor> = medidorDao.getAll()
+// Clase para gestionar los registros de medidores, actuando como una capa entre la UI y la base de datos
+class Registros private constructor(contexto: Context) {
+    // Instancia de la clase auxiliar para la base de datos de medidores
+    private val db: MedidorDaoDbHelper = MedidorDaoDbHelper(contexto)
 
-    suspend fun agregar(medidor:Medidor) = medidorDao.insertAll(medidor)
+    // Función suspendida para obtener todos los medidores
+    // withContext(Dispatchers.IO) cambia la ejecución a un hilo de E/S para no bloquear el hilo principal
+    suspend fun obtenerTodos(): List<Medidor> = withContext(Dispatchers.IO) {
+        // Llama a la función getAll() del DAO para obtener todos los medidores
+        db.getAll()
+    }
 
-    suspend fun eliminar(medidor:Medidor) = medidorDao.delete(medidor)
+    // Función suspendida para agregar un nuevo medidor
+    // withContext(Dispatchers.IO) cambia la ejecución a un hilo de E/S
+    suspend fun agregar(medidor: Medidor) = withContext(Dispatchers.IO) {
+        // Llama a la función insert() del DAO para agregar el medidor a la base de datos
+        db.insert(medidor)
+    }
 
-    suspend fun contarRegistros():Int = medidorDao.count()
+    // Función suspendida para eliminar un medidor existente
+    // withContext(Dispatchers.IO) cambia la ejecución a un hilo de E/S
+    suspend fun eliminar(medidor: Medidor) = withContext(Dispatchers.IO) {
+        // Llama a la función delete() del DAO para eliminar el medidor de la base de datos
+        db.delete(medidor)
+    }
 
+    // Objeto complementario para implementar el patrón Singleton
     companion object {
-        @Volatile
-        private var instance: Registros? = null
+        // Instancia única de la clase Registros
+        private var instancia: Registros? = null
 
-        fun getInstance(contexto:Context):Registros {
-            return getInstanceDSDbHelper(contexto)
-        }
-
-        fun getInstanceDSDbHelper(contexto:Context):Registros {
-            return instance ?: synchronized(this) {
-                Registros(
-                    MedidorDaoDbHelper(contexto)
-                )
-            }
-        }
-
-        fun getInstanceDSRoom(contexto: Context):Registros {
-            return instance ?: synchronized(this) {
-                Registros(
-                    Room.databaseBuilder(
-                        contexto.applicationContext,
-                        Database::class.java,
-                        "medidor.db"
-                    ).build().MedidorDao()
-                ).also {
-                    instance = it
-                }
-            }
+        // Metodo para obtener la instancia única de la clase Registros (Singleton)
+        fun getInstance(contexto: Context): Registros {
+            // Si la instancia es nula, crea una nueva
+            if( instancia == null )
+                instancia = Registros(contexto)
+            // Devuelve la instancia existente o la recién creada
+            return instancia!!
         }
     }
 }

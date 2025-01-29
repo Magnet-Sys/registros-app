@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Registros App</string>
+    <string name="registrar_medicion">Registrar Medición</string>
+    <string name="volver">Volver</string>
+    <string name="agregar">Agregar</string>
+    <string name="eliminar">Eliminar</string>
+    <string name="registro_medidor">Registro de Medidor</string>
+    <string name="medidor">Medidor</string>
+    <string name="fecha">Fecha (AAAA-MM-DD)</string>
+    <string name="fecha_placeholder">Ingrese la fecha en formato AAAA-MM-DD</string>
+    <string name="medidor_de">Medidor de:</string>
+    <string name="luz">Luz</string>
+    <string name="gas">Gas</string>
+    <string name="agua">Agua</string>
+</resources>
